@@ -15,7 +15,7 @@ Connect to a VM or use from local machine
 ```console
 $ pwd # /home/user
 $ git clone https://github.com/floriancourgey/adobe-campaign-editor adobe-campaign-editor-instance1 # 1 folder for 1 instance
-$ cd adobe-campaign-editor-instance1/node
+$ cd adobe-campaign-editor-instance1
 # if behind a corporate firewall, set HTTP proxy
 $ npm config set proxy http://x.x.x.x:port
 $ npm config set https-proxy http://x.x.x.x:port
@@ -30,14 +30,14 @@ $ git clone git@github.com/user/instance1.git instance
 # copy env file, and edit it
 $ cp .env.dist .env
 $ vim .env
-$ node download.js # download data schemas
+$ node src/download.js # download data schemas
 $ cd instance && git status && cd .. # check
-$ node git.js # git commit & push
+$ node src/git.js # git commit & push
 ```
 
 That's it! Set up a CRON every 15 min:
 
 ```bash
 $ crontab -e
-*/15 * * * * cd /home/user/adobe-campaign-editor-instance1/node && node download.js && node git.js
+*/15 * * * * cd /home/user/adobe-campaign-editor-instance1 && node src/download.js && node src/git.js
 ```
