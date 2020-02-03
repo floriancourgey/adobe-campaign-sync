@@ -1,8 +1,7 @@
 const FCO_ACC = require('./FCO_ACC.js'); // FCO lib
-const soap = require('soap'); // soap requests
 const cheerio = require('cheerio'); // light jquery
 const fs = require('fs-extra'); // filesystem extensions
-const _ = require('lodash'); // js extensions
+// const _ = require('lodash'); // js extensions
 const sanitize_filename = require("sanitize-filename"); // get clean filename
 const pd = require('pretty-data').pd;
 const instanceDir = process.env.INSTANCE_DIR;
@@ -28,21 +27,15 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
       var dir, filename;
 
       if($this.children('folder').length){
-        var folderName = $this.first('folder').attr('name');
-
+        var folderName = $this.children('folder').first().attr('name');
         if(folderName !== undefined && folders[folderName] === undefined){
           console.log('has new folder:', folderName);
-          // get folder full path via sql or soap
-          var args = {
-            sessiontoken : '',
-            entity : {$xml :
-              '<queryDef operation="get" schema="xtk:folder">'+
-              '<select><node expr="@fullName"/></select>'+
-              '<where><condition expr="@name = \'xtkJavascript\'"/></where>'+
-              '</queryDef>'
-            }
+          // get folder full path
+          var folderFullPath = getFolderFullNameByName(FCO_ACC.xtkQueryDefClient, folderName);
+          folders[folderName]= {
+            'name': folderName,
+            'fullName': folderFullPath
           };
-          folders[folderName]= {};
         }
       } else {
         /*
@@ -59,7 +52,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
 
       // can be factorized but keep it this way ATM
       // @todo get folder path from instance for schemas with @folder-id field
-      switch(namespacedSchema){/*
+      switch(namespacedSchema){
         case 'xtk:srcSchema':
           dir = instanceDir+'/Administration/Configuration/Data schemas/'+$this.attr('namespace')+'/';
           filename = $this.attr('name')+'.html';
@@ -91,7 +84,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         case 'xtk:xslt':
           dir = instanceDir+'/Administration/Configuration/XSL style sheets/'+$this.attr('namespace')+'/';
           filename = $this.attr('name')+'.html';
-          break;*/
+          break;
         case 'nms:typologyRule':
           dir = instanceDir+'/Administration/Configuration/Typology rules/';
           filename = $this.attr('name')+'.html';
@@ -110,40 +103,40 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
   });
 
 
-      // for each workflow
-      /*
-      $('workflow').each(function(i, elem){
-        const $this = $(this);
-        console.log('- Workflow id:', $this.attr('id'));
-        var acFolder = $this.children('folderFullName').text();
-        if(!_(acFolder).startsWith('/') || !_(acFolder).endsWith('/')){
-          console.log('- Unable to get AC folder for workflow '+$this.attr('label')+' ('+$this.attr('id')+')');
-          console.log(acFolder.substring(0, 30));
-          // console.log(this);
-          // process.exit();
-          return;
-        }
-        var filename = sanitize_filename($this.attr('label')+' ('+$this.attr('internalName')+') ('+$this.attr('id')+')');
-        var path = instanceDir+acFolder+filename+process.env.WORKFLOW_EXTENSION;
-        console.log('saved to path', path);
-        // read again
-        var content = cheerio.load(this, htmlparserOptions).xml();
-        // remove eventCount="111" and taskCount="222"
-        content = content.replace(/eventCount="\d+"/g, '');
-        content = content.replace(/taskCount="\d+"/g, '');
-        // pretty print
-        content = pd.xml(content);
-        // save
-        fs.outputFileSync(path, content, function (err) {
-          throw err;
-        });
-      });
-      */
+  // for each workflow
+  /*
+  $('workflow').each(function(i, elem){
+    const $this = $(this);
+    console.log('- Workflow id:', $this.attr('id'));
+    var acFolder = $this.children('folderFullName').text();
+    if(!_(acFolder).startsWith('/') || !_(acFolder).endsWith('/')){
+      console.log('- Unable to get AC folder for workflow '+$this.attr('label')+' ('+$this.attr('id')+')');
+      console.log(acFolder.substring(0, 30));
+      // console.log(this);
+      // process.exit();
+      return;
+    }
+    var filename = sanitize_filename($this.attr('label')+' ('+$this.attr('internalName')+') ('+$this.attr('id')+')');
+    var path = instanceDir+acFolder+filename+process.env.WORKFLOW_EXTENSION;
+    console.log('saved to path', path);
+    // read again
+    var content = cheerio.load(this, htmlparserOptions).xml();
+    // remove eventCount="111" and taskCount="222"
+    content = content.replace(/eventCount="\d+"/g, '');
+    content = content.replace(/taskCount="\d+"/g, '');
+    // pretty print
+    content = pd.xml(content);
+    // save
+    fs.outputFileSync(path, content, function (err) {
+      throw err;
+    });
+  });
+  */
 }
 
 // can be factorized as
 // getXbyField(xtkQueryDefClient, fieldName, fieldValue, select['@fullName', '@id'])
-async function getFolderFullNameByName(xtkQueryDefClient, folderName){
+function getFolderFullNameByName(xtkQueryDefClient, folderName){
   var args = {
     sessiontoken : '',
     entity : {$xml :
@@ -155,9 +148,11 @@ async function getFolderFullNameByName(xtkQueryDefClient, folderName){
   }
   var fullName;
   console.log('getFolderFullNameByName:', folderName, '1');
-  await xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
-    const $ = cheerio.load(rawResponse, htmlparserOptions);
+  xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
+    const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
     console.log('getFolderFullNameByName:', folderName, $('folder').attr('fullName'), '2');
+    // var regex = /<folder fullName="(.+)"\/><\/pdomOutput>/;
+    // return regex.match(rawResponse)[1];
   });
   console.log('getFolderFullNameByName:', folderName, '3');
 }

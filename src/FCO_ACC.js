@@ -81,6 +81,7 @@ exports.getSpecFile = function(where, onSuccessHandler){
 
   soap.createClient(xtkQueryDefWsdl, exports.mainArgs, function(err, xtkQueryDefClient){
     console.log('SOAP xtkQueryDefClient OK');
+    exports.xtkQueryDefClient = xtkQueryDefClient;
     xtkQueryDefClient.addHttpHeader('X-Security-Token', exports.securityToken);
     xtkQueryDefClient.addHttpHeader('cookie',  "__sessiontoken=" + exports.sessionToken);
 
@@ -106,6 +107,7 @@ exports.generateDoc = function(where, onSuccessHandler){
 
     soap.createClient(xtkSpecfileWsdl, exports.mainArgs, function(err, xtkSpecfileClient){
       console.log('SOAP xtkSpecfileClient OK');
+      exports.xtkSpecfileClient = xtkSpecfileClient;
       xtkSpecfileClient.addHttpHeader('X-Security-Token', exports.securityToken);
       xtkSpecfileClient.addHttpHeader('cookie',  "__sessiontoken=" + exports.sessionToken);
 
