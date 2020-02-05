@@ -131,8 +131,10 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           break;
         // Default
         default:
-          console.log('Not yet implemented');
-          return;
+          console.log('Not yet implemented but adding it to .tmp');
+          dir = instanceDir+'/.tmp/';
+          filename = namespace+'_'+schema+'_'+$this.attr('name')+'_'+$this.attr('internalName')+'.xml';
+          break;
       }
       var path = dir+sanitize_filename(filename);
       console.log('"'+$this.attr('name')+' (id '+$this.attr('id')+')" saved as "'+filename+'"');
