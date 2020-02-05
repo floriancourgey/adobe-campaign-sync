@@ -41,3 +41,20 @@ That's it! Set up a CRON every 15 min:
 $ crontab -e
 */15 * * * * cd /home/user/adobe-campaign-sync-instance1 && node src/download.js && node src/git.js
 ```
+
+## Objects directories:
+- [x] `xtk:srcSchema`, /Administration/Configuration/Data schemas/{namespace}/
+- [x] `xtk:form`, /Administration/Configuration/Input forms/{namespace}/
+- [x] `xtk:navtree`, /Administration/Configuration/Navigation hierarchies/{namespace}/
+- [x] `xtk:javascript`, /Administration/Configuration/JavaScript codes/{namespace}/
+- [x] `xtk:jssp`, /Administration/Configuration/Dynamic JavaScript pages/{namespace}/
+- [x] `xtk:formRendering`, /Administration/Configuration/Form rendering/
+- [x] `xtk:sql`, /Administration/Configuration/SQL scripts/{namespace}/
+- [x] `xtk:xslt`, /Administration/Configuration/XSL style sheets/{namespace}/
+- [x] `xtk:workflow`, /Administration/Production/
+- [x] `nms:typology`, /Administration/Campaign Management/Typology management/Typologies/
+- [x] `nms:typologyRule`, /Administration/Campaign Management/Typology management/Typology rules/
+- [x] `nms:trackingUrl`, /Resources/Online/Web tracking tags/
+- [x] `nms:webApp`, /Resources/Online/Web applications/
+- [x] `nms:deliveryMapping`, /Administration/Campaign Management/Target mappings/
+- [x] `nms:includeView`, /Resources/Campaign Management/Personalization blocks/
