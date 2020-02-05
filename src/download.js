@@ -34,7 +34,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     var schema = namespacedSchema.split(':')[1];
     console.log('- Namespaced Schema: '+namespacedSchema);
     // for each entity
-    $this.find(schema).each(function(i, elem){
+    $this.children(schema).each(function(i, elem){
       const $this = $(this);
       var dir, filename;
       // if it has a folder
@@ -123,7 +123,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           return;
       }
       var path = dir+sanitize_filename(filename);
-      console.log('"'+$this.attr('name')+'" saved as "'+filename+'"');
+      console.log('"'+$this.attr('name')+' (id '+$this.attr('id')+')" saved as "'+filename+'"');
       // save
       fs.outputFileSync(path, $.html($this), function (err) {
         throw err;
