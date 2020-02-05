@@ -14,8 +14,8 @@ $ npm -v # v6.12.1
 Connect to a VM or use from local machine
 ```console
 $ pwd # /home/user
-$ git clone https://github.com/floriancourgey/adobe-campaign-editor adobe-campaign-editor-instance1 # 1 folder for 1 instance
-$ cd adobe-campaign-editor-instance1
+$ git clone https://github.com/floriancourgey/adobe-campaign-sync adobe-campaign-sync-instance1 # 1 folder for 1 instance
+$ cd adobe-campaign-sync-instance1
 # if behind a corporate firewall, set HTTP proxy
 $ npm config set proxy http://x.x.x.x:port
 $ npm config set https-proxy http://x.x.x.x:port
@@ -39,5 +39,5 @@ That's it! Set up a CRON every 15 min:
 
 ```bash
 $ crontab -e
-*/15 * * * * cd /home/user/adobe-campaign-editor-instance1 && node src/download.js && node src/git.js
+*/15 * * * * cd /home/user/adobe-campaign-sync-instance1 && node src/download.js && node src/git.js
 ```
