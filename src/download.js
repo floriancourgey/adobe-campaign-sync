@@ -16,17 +16,30 @@ const folders = [];
 function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
 
   const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
+
+  // package structure:
+  // <package>
+  //   <entities schema="xtk:form">
+  //     <form></form>
+  //     <form></form>
+  //   </entities>
+  // </package>
+
+  // for each entity (form, workflow...)
   $('entities').each(function(i, elem){
     const $this = $(this);
+    // get the entity name, i.e. "xtk:form"
     var namespacedSchema = $this.attr('schema');
     var namespace = namespacedSchema.split(':')[0];
     var schema = namespacedSchema.split(':')[1];
     console.log('- Namespaced Schema: '+namespacedSchema);
+    // for each entity
     $this.find(schema).each(function(i, elem){
       const $this = $(this);
       var dir, filename;
-
+      // if it has a folder
       if($this.children('folder').length){
+        /*
         var folderName = $this.children('folder').first().attr('name');
         if(folderName !== undefined && folders[folderName] === undefined){
           console.log('has new folder:', folderName);
@@ -36,7 +49,9 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
             'name': folderName,
             'fullName': folderFullPath
           };
+          console.log('folderFullPath', folderFullPath);
         }
+        */
       } else {
         /*
         console.log('NO folder');
@@ -48,7 +63,6 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         console.log('after');
         */
       }
-      return;
 
       // can be factorized but keep it this way ATM
       // @todo get folder path from instance for schemas with @folder-id field
@@ -88,6 +102,10 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         case 'nms:typologyRule':
           dir = instanceDir+'/Administration/Configuration/Typology rules/';
           filename = $this.attr('name')+'.html';
+          break;
+        case 'xtk:workflow':
+          dir = instanceDir+'/Administration/Production/';
+          filename = $this.attr('internalName')+'.html';
           break;
         default:
           console.log('Not yet implemented');
@@ -149,15 +167,15 @@ function getFolderFullNameByName(xtkQueryDefClient, folderName){
   var fullName;
   console.log('getFolderFullNameByName:', folderName, '1');
   xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
+    console.log('getFolderFullNameByName:', folderName, '3');
     const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
-    console.log('getFolderFullNameByName:', folderName, $('folder').attr('fullName'), '2');
+    console.log('getFolderFullNameByName:', folderName, $('folder').attr('fullName'), '4');
     // var regex = /<folder fullName="(.+)"\/><\/pdomOutput>/;
     // return regex.match(rawResponse)[1];
   });
-  console.log('getFolderFullNameByName:', folderName, '3');
+  console.log('getFolderFullNameByName:', folderName, '2');
 }
 
-FCO_ACC.logon(onLogonSuccess);
-function onLogonSuccess(){
+FCO_ACC.logon(function(){
   FCO_ACC.generateDoc(process.env.PACKAGES, parseFinalPackage);
-}
+});
