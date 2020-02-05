@@ -67,6 +67,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
       // can be factorized but keep it this way ATM
       // @todo get folder path from instance for schemas with @folder-id field
       switch(namespacedSchema){
+        // XTK
         case 'xtk:srcSchema':
           dir = instanceDir+'/Administration/Configuration/Data schemas/'+$this.attr('namespace')+'/';
           filename = $this.attr('name')+'.html';
@@ -99,14 +100,24 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           dir = instanceDir+'/Administration/Configuration/XSL style sheets/'+$this.attr('namespace')+'/';
           filename = $this.attr('name')+'.html';
           break;
-        case 'nms:typologyRule':
-          dir = instanceDir+'/Administration/Configuration/Typology rules/';
-          filename = $this.attr('name')+'.html';
-          break;
         case 'xtk:workflow':
           dir = instanceDir+'/Administration/Production/';
           filename = $this.attr('internalName')+'.html';
           break;
+        // NMS
+        case 'nms:typologyRule':
+          dir = instanceDir+'/Administration/Configuration/Typology rules/';
+          filename = $this.attr('name')+'.html';
+          break;
+        case 'nms:trackingUrl':
+          dir = instanceDir+'/Resources/Online/Web tracking tags/';
+          filename = $this.attr('tagId')+'.html';
+          break;
+        case 'nms:webApp':
+          dir = instanceDir+'/Resources/Online/Web applications/';
+          filename = $this.attr('internalName')+'.html';
+          break;
+        // Default
         default:
           console.log('Not yet implemented');
           return;
