@@ -121,6 +121,14 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           dir = instanceDir+'/Resources/Online/Web applications/';
           filename = $this.attr('internalName')+'.html';
           break;
+        case 'nms:deliveryMapping':
+          dir = instanceDir+'/Administration/Campaign Management/Target mappings/';
+          filename = $this.attr('name')+'.html';
+          break;
+        case 'nms:includeView':
+          dir = instanceDir+'/Resources/Campaign Management/Personalization blocks/';
+          filename = $this.attr('name')+'.html';
+          break;
         // Default
         default:
           console.log('Not yet implemented');
