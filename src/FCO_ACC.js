@@ -119,18 +119,17 @@ exports.generateDoc = function(where, onSuccessHandler){
         console.log('SOAP GenerateDoc OK');
         // save request to archives
         const archiveRequest = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-request.xml';
-        fs.outputFileSync(archiveRequest, rawResponse, function (err) {
+        fs.outputFileSync(archiveRequest, rawRequest, function (err) {
           throw err;
         });
-        if(err){
-          console.log('rawRequest', rawRequest);
-          throw err;
-        }
         // save response to archives
         const archiveResponse = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-response.xml';
         fs.outputFileSync(archiveResponse, rawResponse, function (err) {
           throw err;
         });
+        if(err){
+          throw err;
+        }
 
         onSuccessHandler(result, rawResponse, soapHeader, rawRequest);
       });
