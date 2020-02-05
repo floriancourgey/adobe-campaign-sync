@@ -105,8 +105,12 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           filename = $this.attr('internalName')+'.html';
           break;
         // NMS
+        case 'nms:typology':
+          dir = instanceDir+'/Administration/Campaign Management/Typology management/Typologies/';
+          filename = $this.attr('name')+'.html';
+          break;
         case 'nms:typologyRule':
-          dir = instanceDir+'/Administration/Configuration/Typology rules/';
+          dir = instanceDir+'/Administration/Campaign Management/Typology management/Typology rules/';
           filename = $this.attr('name')+'.html';
           break;
         case 'nms:trackingUrl':
