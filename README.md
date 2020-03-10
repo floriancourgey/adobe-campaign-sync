@@ -1,4 +1,9 @@
-# Installation
+# Adobe Campaign Sync to Git by Florian Courgey
+Synchronize any object (Schema, Form, JSSP...) from Adobe Campaign to your own Git repo (Github, Bitbucket...).
+
+![](/doc/Presentation.jpg)
+
+## Installation
 
 ## Prerequisites
 - Install NodeJS v12 LTS (https://nodejs.org/en/):
