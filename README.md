@@ -15,7 +15,7 @@ $ npm -v # v6.12.1
 - Create a package on your instance, based on `xtk:srcSchema` with the namespaces you want to track:
 ![](doc/screenshot-package.jpg)
 
-## Step 1. Install the downloader
+## Step 1. Install adobe-campaign-sync
 Connect to a VM or use from local machine
 ```console
 $ pwd # /home/user
@@ -28,7 +28,7 @@ $ npm config set https-proxy http://x.x.x.x:port
 $ npm install
 ```
 
-## Step 2. Connect to the instance repo and Download
+## Step 2. Launch adobe-campaign-sync to download the instance and upload to git
 ```console
 # note: clone with a GIT url, not an HTPPS, otherwise SSH autologin with the SSH public key won't work
 $ git clone git@github.com/user/instance1.git instance
