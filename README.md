@@ -12,8 +12,8 @@ $ node -v # v12.13.1
 $ npm -v # v6.12.1
 ```
 - Create a git repo to track your instance changes (on github/gitlab/bitbucket..) and init it with an empty file like a README.md
-- Create a package on your instance, based on `xtk:srcSchema` with the namespaces you want to track:
-![](doc/screenshot-package.jpg)
+- Create a package on your instance, based on the objects you want to track in git:
+![](doc/Package.jpg)
 
 ## Step 1. Install adobe-campaign-sync
 Connect to a VM or use from local machine
