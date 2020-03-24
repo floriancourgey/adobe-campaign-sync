@@ -47,6 +47,10 @@ $ crontab -e
 */15 * * * * cd /home/user/adobe-campaign-sync-instance1 && node src/download.js && node src/git.js
 ```
 
+## Todo
+- [ ] workflows (& campaign) with dates such as lastProcessingDate
+- [ ] workflows (& campaign) are minified, should we separate `><` into `>\n<`?
+
 ## Objects directories:
 - [x] `xtk:srcSchema`, /Administration/Configuration/Data schemas/{namespace}/
 - [x] `xtk:form`, /Administration/Configuration/Input forms/{namespace}/
