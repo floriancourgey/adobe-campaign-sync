@@ -183,6 +183,14 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
   */
 }
 
+function addNewLineForXmlStartTag(xmlString){
+  // \w for any letter, \d for any digit, -=" for attributes, : for ACC namespace
+  // @ for ACC fields, [!] for CDATA, &; for lt gt, / for ending tag or no child tag
+  // () for ACC label
+  const xmlStartTagRegex = /(<[\w =":&;@\[\]!\d/\-\(\)]+?>)/ig;
+  return xmlString.replace(xmlStartTagRegex, '$1\n');
+}
+
 // can be factorized as
 // getXbyField(xtkQueryDefClient, fieldName, fieldValue, select['@fullName', '@id'])
 function getFolderFullNameByName(xtkQueryDefClient, folderName){
