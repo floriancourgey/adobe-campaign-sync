@@ -64,6 +64,9 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         */
       }
 
+      // html to be written to file
+      var html = $.html($this);
+
       // can be factorized but keep it this way ATM
       // @todo get folder path from instance for schemas with @folder-id field
       switch(namespacedSchema){
@@ -139,7 +142,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
       var path = dir+sanitize_filename(filename);
       console.log('(name '+$this.attr('name')+') (internalName '+$this.attr('internalName')+') saved as "'+filename+'"');
       // save
-      fs.outputFileSync(path, $.html($this), function (err) {
+      fs.outputFileSync(path, html, function (err) {
         throw err;
       });
     });
