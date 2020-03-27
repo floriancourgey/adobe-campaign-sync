@@ -138,6 +138,29 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           dir = instanceDir+'/Resources/Campaign Management/Personalization blocks/';
           filename = $this.attr('name')+'.html';
           break;
+        case 'nms:operation':
+          dir = instanceDir+'/Campaign Management/Campaigns/';
+          filename = $this.attr('internalName')+'.html';
+          /// edit XML
+          // remove nodes
+          //console.log($this.find('variables'));
+          $this.find('variables').each(function(){
+            const $this = $(this);
+            // remove inside
+            $this.empty();
+            // TODO remove attr (not working ATM)
+            while(this.attribs && this.attribs.length > 0){
+              this.removeAttribute(this.attribs[0].name);
+            }
+          });
+          html = $.html($this);
+          html = html.replace(/ eventCount="\d+"/g, ''); // remove eventCount="111"
+          html = html.replace(/ taskCount="\d+"/g, ''); //and taskCount="222"
+          html = html.replace(/ duration="\d+"/g, ''); //and duration="222"
+          // pretty print
+          html = pd.xml(html);
+          /// end edit XML
+          break;
         // Default
         default:
           console.log('Not yet implemented but adding it to .tmp');

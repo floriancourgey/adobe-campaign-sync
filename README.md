@@ -67,3 +67,6 @@ $ crontab -e
 - [x] `nms:webApp`, /Resources/Online/Web applications/
 - [x] `nms:deliveryMapping`, /Administration/Campaign Management/Target mappings/
 - [x] `nms:includeView`, /Resources/Campaign Management/Personalization blocks/
+- [x] `nms:operation`, /Campaign Management/Campaigns/
+
+Note: Workflows and Campaigns will be pretty-printed using [pretty-data](https://www.npmjs.com/package/pretty-data)
