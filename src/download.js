@@ -137,7 +137,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           break;
       }
       var path = dir+sanitize_filename(filename);
-      console.log('"'+$this.attr('name')+' (id '+$this.attr('id')+')" saved as "'+filename+'"');
+      console.log('(name '+$this.attr('name')+') (internalName '+$this.attr('internalName')+') saved as "'+filename+'"');
       // save
       fs.outputFileSync(path, $.html($this), function (err) {
         throw err;
