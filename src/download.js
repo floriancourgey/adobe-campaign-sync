@@ -106,6 +106,12 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         case 'xtk:workflow':
           dir = instanceDir+'/Administration/Production/';
           filename = $this.attr('internalName')+'.html';
+          /// edit XML
+          html = html.replace(/eventCount="\d+"/g, ''); // remove eventCount="111"
+          html = html.replace(/taskCount="\d+"/g, ''); //and taskCount="222"
+          // pretty print
+          html = pd.xml(html);
+          /// end edit XML
           break;
         // NMS
         case 'nms:typology':
@@ -167,9 +173,6 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     console.log('saved to path', path);
     // read again
     var content = cheerio.load(this, htmlparserOptions).xml();
-    // remove eventCount="111" and taskCount="222"
-    content = content.replace(/eventCount="\d+"/g, '');
-    content = content.replace(/taskCount="\d+"/g, '');
     // pretty print
     content = pd.xml(content);
     // save
