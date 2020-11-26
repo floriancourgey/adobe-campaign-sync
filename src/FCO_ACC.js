@@ -47,7 +47,7 @@ exports.logon = function(onSuccess){
       console.log('Logon OK with user:', result.pSessionInfo.sessionInfo.userInfo.attributes.loginCS);
       console.log('securityToken:', exports.securityToken);
       console.log('sessionToken:', exports.sessionToken);
-      onSuccess();
+      onSuccess({securityToken: exports.securityToken, sessionToken: exports.sessionToken});
     });
   });
 }
@@ -80,32 +80,39 @@ exports.getSpecFile = function(where, onSuccessHandler){
   }
 
   soap.createClient(xtkQueryDefWsdl, exports.mainArgs, function(err, xtkQueryDefClient){
+    if(err){
+      throw err;
+    }
     console.log('SOAP xtkQueryDefClient OK');
     exports.xtkQueryDefClient = xtkQueryDefClient;
     xtkQueryDefClient.addHttpHeader('X-Security-Token', exports.securityToken);
     xtkQueryDefClient.addHttpHeader('cookie',  "__sessiontoken=" + exports.sessionToken);
 
     xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
-      console.log('SOAP ExecuteQuery OK');
       if(err){
         console.log('rawRequest', rawRequest);
         console.log('soapHeader', soapHeader);
         throw err;
       }
+      console.log('SOAP ExecuteQuery OK');
 
       onSuccessHandler(result, rawResponse, soapHeader, rawRequest);
     });
   });
 }
 
-exports.generateDoc = function(where, onSuccessHandler){
-  exports.getSpecFile(where, function(result, rawResponse, soapHeader, rawRequest){
+exports.generateDoc = function(specFileDefinition, onSuccessHandler){
+  //exports.getSpecFile(where, function(result, rawResponse, soapHeader, rawRequest){
 
-    const $ = cheerio.load(rawResponse, exports.htmlparserOptions);
-    console.log('XML Definition OK');
-    var definition = $('pdomOutput').html();
+    //const $ = cheerio.load(rawResponse, exports.htmlparserOptions);
+    //console.log('XML Definition OK');
+    // var definition = specFileDefinition;
 
+    console.log('SOAP xtkSpecfileClient...');
     soap.createClient(xtkSpecfileWsdl, exports.mainArgs, function(err, xtkSpecfileClient){
+      if(err){
+        throw err;
+      }
       console.log('SOAP xtkSpecfileClient OK');
       exports.xtkSpecfileClient = xtkSpecfileClient;
       xtkSpecfileClient.addHttpHeader('X-Security-Token', exports.securityToken);
@@ -113,26 +120,34 @@ exports.generateDoc = function(where, onSuccessHandler){
 
       var args = {
         sessiontoken: '',
-        entity: {$xml: definition},
+        entity: {$xml: specFileDefinition},
       };
+      console.log('SOAP GenerateDoc...');
       xtkSpecfileClient.GenerateDoc(args, function(err, result, rawResponse, soapHeader, rawRequest){
-        console.log('SOAP GenerateDoc OK');
         // save request to archives
-        const archiveRequest = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-request.xml';
+        const archiveRequest = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-request.xml';
         fs.outputFileSync(archiveRequest, rawRequest, function (err) {
           throw err;
         });
         // save response to archives
-        const archiveResponse = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-response.xml';
+        const archiveResponse = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-response.xml';
         fs.outputFileSync(archiveResponse, rawResponse, function (err) {
           throw err;
         });
         if(err){
-          throw err;
+          var o = err.Fault;
+          for(var key in o){
+            console.log('- '+key+': '+o[key]);
+            
+          }
+          if(err.Fault.faultstring != 'Invalid XML'){
+            throw err;
+          }
         }
+        console.log('SOAP GenerateDoc OK');
 
         onSuccessHandler(result, rawResponse, soapHeader, rawRequest);
       });
-    });
+    //});
   });
 }

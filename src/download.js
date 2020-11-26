@@ -14,6 +14,7 @@ if(!process.env.PACKAGES){
 const folders = [];
 
 function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
+  console.log('parseFinalPackage...');
 
   const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
 
@@ -204,6 +205,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     });
   });
   */
+ console.log('parseFinalPackage... OK');
 }
 
 function addNewLineForXmlStartTag(xmlString){
@@ -238,6 +240,12 @@ function getFolderFullNameByName(xtkQueryDefClient, folderName){
   console.log('getFolderFullNameByName:', folderName, '2');
 }
 
-FCO_ACC.logon(function(){
-  FCO_ACC.generateDoc(process.env.PACKAGES, parseFinalPackage);
+// logon > getSpecFile > generateDoc > parseFinalPackage
+FCO_ACC.logon(function(data){
+  FCO_ACC.getSpecFile(process.env.PACKAGES, function(result, rawResponse, soapHeader, rawRequest){
+    const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
+    var specFileDefinition = $('pdomOutput').html();
+    console.log('XML Definition OK');
+    FCO_ACC.generateDoc(specFileDefinition, parseFinalPackage);
+  });
 });
