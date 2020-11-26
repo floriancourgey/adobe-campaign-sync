@@ -205,7 +205,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     });
   });
   */
- console.log('parseFinalPackage... OK');
+  console.log('parseFinalPackage... OK');
 }
 
 function addNewLineForXmlStartTag(xmlString){
