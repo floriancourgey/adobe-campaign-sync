@@ -118,16 +118,18 @@ exports.generateDoc = function(specFileDefinition, onSuccessHandler){
     };
     console.log('SOAP GenerateDoc...');
     xtkSpecfileClient.GenerateDoc(args, function(err, result, rawResponse, soapHeader, rawRequest){
-      // save request to archives
-      const archiveRequest = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-request.xml';
-      fs.outputFileSync(archiveRequest, rawRequest, function (err) {
-        throw err;
-      });
-      // save response to archives
-      const archiveResponse = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-response.xml';
-      fs.outputFileSync(archiveResponse, rawResponse, function (err) {
-        throw err;
-      });
+      if(process.env.SAVE_ARCHIVES == '1'){
+        // save request to archives
+        const archiveRequest = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-request.xml';
+        fs.outputFileSync(archiveRequest, rawRequest, function (err) {
+          throw err;
+        });
+        // save response to archives
+        const archiveResponse = 'archives/'+moment().format('YYYY/MM/DD/HHmmss-SSS')+'-generateDoc-response.xml';
+        fs.outputFileSync(archiveResponse, rawResponse, function (err) {
+          throw err;
+        });
+      }
       if(err){
         var o = err.Fault;
         for(var key in o){
