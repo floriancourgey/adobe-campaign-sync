@@ -4,17 +4,19 @@ const fs = require('fs-extra'); // filesystem extensions
 // const _ = require('lodash'); // js extensions
 const sanitize_filename = require("sanitize-filename"); // get clean filename
 const pd = require('pretty-data').pd;
+const logger = require('./Logger.js');
 const instanceDir = process.env.INSTANCE_DIR;
 
 if(!process.env.PACKAGES){
-  console.log('Define .env.PACKAGES');
+  logger.debug('Define .env.PACKAGES');
   process.exit();
 }
+
 
 const folders = [];
 
 function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
-  console.log('parseFinalPackage...');
+  logger.debug('parseFinalPackage...');
 
   const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
 
@@ -33,7 +35,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     var namespacedSchema = $this.attr('schema');
     var namespace = namespacedSchema.split(':')[0];
     var schema = namespacedSchema.split(':')[1];
-    console.log('- Namespaced Schema: '+namespacedSchema);
+    logger.debug('- Namespaced Schema: '+namespacedSchema);
     // for each entity
     $this.children(schema).each(function(i, elem){
       const $this = $(this);
@@ -43,25 +45,25 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
         /*
         var folderName = $this.children('folder').first().attr('name');
         if(folderName !== undefined && folders[folderName] === undefined){
-          console.log('has new folder:', folderName);
+          logger.debug('has new folder:', folderName);
           // get folder full path
           var folderFullPath = getFolderFullNameByName(FCO_ACC.xtkQueryDefClient, folderName);
           folders[folderName]= {
             'name': folderName,
             'fullName': folderFullPath
           };
-          console.log('folderFullPath', folderFullPath);
+          logger.debug('folderFullPath', folderFullPath);
         }
         */
       } else {
         /*
-        console.log('NO folder');
+        logger.debug('NO folder');
         // get folder
-        console.log('before');
+        logger.debug('before');
         var camelCaseNamespacedSchema = namespace + schema[0].toUpperCase() + schema.substr(1);
-        console.log('camelCaseNamespacedSchema:', camelCaseNamespacedSchema);
+        logger.debug('camelCaseNamespacedSchema:', camelCaseNamespacedSchema);
         getFolderFullNameByName(xtkQueryDefClient, camelCaseNamespacedSchema);
-        console.log('after');
+        logger.debug('after');
         */
       }
 
@@ -144,7 +146,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           filename = $this.attr('internalName')+'.html';
           /// edit XML
           // remove nodes
-          //console.log($this.find('variables'));
+          //logger.debug($this.find('variables'));
           $this.find('variables').each(function(){
             const $this = $(this);
             // remove inside
@@ -164,13 +166,13 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
           break;
         // Default
         default:
-          console.log('Not yet implemented but adding it to .tmp');
+          logger.debug('Not yet implemented but adding it to .tmp');
           dir = instanceDir+'/.tmp/';
           filename = namespace+'_'+schema+'_'+$this.attr('name')+'_'+$this.attr('internalName')+'.xml';
           break;
       }
       var path = dir+sanitize_filename(filename);
-      console.log('(name '+$this.attr('name')+') (internalName '+$this.attr('internalName')+') saved as "'+filename+'"');
+      logger.debug('(name '+$this.attr('name')+') (internalName '+$this.attr('internalName')+') saved as "'+filename+'"');
       // save
       fs.outputFileSync(path, html, function (err) {
         throw err;
@@ -183,18 +185,18 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
   /*
   $('workflow').each(function(i, elem){
     const $this = $(this);
-    console.log('- Workflow id:', $this.attr('id'));
+    logger.debug('- Workflow id:', $this.attr('id'));
     var acFolder = $this.children('folderFullName').text();
     if(!_(acFolder).startsWith('/') || !_(acFolder).endsWith('/')){
-      console.log('- Unable to get AC folder for workflow '+$this.attr('label')+' ('+$this.attr('id')+')');
-      console.log(acFolder.substring(0, 30));
-      // console.log(this);
+      logger.debug('- Unable to get AC folder for workflow '+$this.attr('label')+' ('+$this.attr('id')+')');
+      logger.debug(acFolder.substring(0, 30));
+      // logger.debug(this);
       // process.exit();
       return;
     }
     var filename = sanitize_filename($this.attr('label')+' ('+$this.attr('internalName')+') ('+$this.attr('id')+')');
     var path = instanceDir+acFolder+filename+process.env.WORKFLOW_EXTENSION;
-    console.log('saved to path', path);
+    logger.debug('saved to path', path);
     // read again
     var content = cheerio.load(this, htmlparserOptions).xml();
     // pretty print
@@ -205,7 +207,7 @@ function parseFinalPackage(result, rawResponse, soapHeader, rawRequest){
     });
   });
   */
-  console.log('parseFinalPackage... OK');
+  logger.debug('parseFinalPackage... OK');
 }
 
 function addNewLineForXmlStartTag(xmlString){
@@ -229,15 +231,15 @@ function getFolderFullNameByName(xtkQueryDefClient, folderName){
     },
   }
   var fullName;
-  console.log('getFolderFullNameByName:', folderName, '1');
+  logger.debug('getFolderFullNameByName:', folderName, '1');
   xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
-    console.log('getFolderFullNameByName:', folderName, '3');
+    logger.debug('getFolderFullNameByName:', folderName, '3');
     const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
-    console.log('getFolderFullNameByName:', folderName, $('folder').attr('fullName'), '4');
+    logger.debug('getFolderFullNameByName:', folderName, $('folder').attr('fullName'), '4');
     // var regex = /<folder fullName="(.+)"\/><\/pdomOutput>/;
     // return regex.match(rawResponse)[1];
   });
-  console.log('getFolderFullNameByName:', folderName, '2');
+  logger.debug('getFolderFullNameByName:', folderName, '2');
 }
 
 // logon > getSpecFile > generateDoc > parseFinalPackage
@@ -245,7 +247,7 @@ FCO_ACC.logon(function(data){
   FCO_ACC.getSpecFile(process.env.PACKAGES, function(result, rawResponse, soapHeader, rawRequest){
     const $ = cheerio.load(rawResponse, FCO_ACC.htmlparserOptions);
     var specFileDefinition = $('pdomOutput').html();
-    console.log('XML Definition OK');
+    logger.debug('XML Definition OK');
     FCO_ACC.generateDoc(specFileDefinition, parseFinalPackage);
   });
 });

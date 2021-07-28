@@ -8,6 +8,7 @@
     "dotenv": "^8.1.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
+    "log4js": "^6.3.0",
     "moment": "^2.24.0",
     "pretty-data": "^0.40.0",
     "sanitize-filename": "^1.6.3",

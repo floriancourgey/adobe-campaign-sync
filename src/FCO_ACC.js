@@ -6,9 +6,10 @@ const fs = require('fs-extra'); // filesystem extensions
 const xtkSessionWsdl = require.resolve(process.env.WSDL_XTK_SESSION);
 const xtkQueryDefWsdl = require.resolve(process.env.WSDL_XTK_QUERYDEF);
 const xtkSpecfileWsdl = require.resolve(process.env.WSDL_XTK_SPECFILE);
+const logger = require('./Logger.js');
 
 if(!process.env.ACC_USER || !process.env.ACC_PWD || !process.env.ACC_ENDPOINT){
-  console.log('Define .env.ACC_USER .env.ACC_PWD .env.ACC_ENDPOINT');
+  logger.debug('Define .env.ACC_USER .env.ACC_PWD .env.ACC_ENDPOINT');
   process.exit();
 }
 
@@ -31,22 +32,22 @@ exports.htmlparserOptions = {
 };
 
 // Logon
-console.log('Logging in');
+logger.debug('Logging in');
 exports.logon = function(onSuccess){
   soap.createClient(xtkSessionWsdl, exports.mainArgs, function(err, client) {
     client.Logon(logonArgs, function(err, result, rawResult) {
       if(err){
-        console.log('soap client.Logon ERROR:', err);
-        console.log('rawResult:', rawResult);
+        logger.debug('soap client.Logon ERROR:', err);
+        logger.debug('rawResult:', rawResult);
         process.exit();
         return;
       }
-      // console.log(result);
+      // logger.debug(result);
       exports.securityToken = result.pstrSecurityToken.$value;
       exports.sessionToken = result.pstrSessionToken.$value;
-      console.log('Logon OK with user:', result.pSessionInfo.sessionInfo.userInfo.attributes.loginCS);
-      console.log('securityToken:', exports.securityToken);
-      console.log('sessionToken:', exports.sessionToken);
+      logger.debug('Logon OK with user:', result.pSessionInfo.sessionInfo.userInfo.attributes.loginCS);
+      logger.debug('securityToken:', exports.securityToken);
+      logger.debug('sessionToken:', exports.sessionToken);
       onSuccess({securityToken: exports.securityToken, sessionToken: exports.sessionToken});
     });
   });
@@ -83,18 +84,18 @@ exports.getSpecFile = function(where, onSuccessHandler){
     if(err){
       throw err;
     }
-    console.log('SOAP xtkQueryDefClient OK');
+    logger.debug('SOAP xtkQueryDefClient OK');
     exports.xtkQueryDefClient = xtkQueryDefClient;
     xtkQueryDefClient.addHttpHeader('X-Security-Token', exports.securityToken);
     xtkQueryDefClient.addHttpHeader('cookie',  "__sessiontoken=" + exports.sessionToken);
 
     xtkQueryDefClient.ExecuteQuery(args, function(err, result, rawResponse, soapHeader, rawRequest) {
       if(err){
-        console.log('rawRequest', rawRequest);
-        console.log('soapHeader', soapHeader);
+        logger.debug('rawRequest', rawRequest);
+        logger.debug('soapHeader', soapHeader);
         throw err;
       }
-      console.log('SOAP ExecuteQuery OK');
+      logger.debug('SOAP ExecuteQuery OK');
 
       onSuccessHandler(result, rawResponse, soapHeader, rawRequest);
     });
@@ -102,12 +103,12 @@ exports.getSpecFile = function(where, onSuccessHandler){
 }
 
 exports.generateDoc = function(specFileDefinition, onSuccessHandler){
-  console.log('SOAP xtkSpecfileClient...');
+  logger.debug('SOAP xtkSpecfileClient...');
   soap.createClient(xtkSpecfileWsdl, exports.mainArgs, function(err, xtkSpecfileClient){
     if(err){
       throw err;
     }
-    console.log('SOAP xtkSpecfileClient OK');
+    logger.debug('SOAP xtkSpecfileClient OK');
     exports.xtkSpecfileClient = xtkSpecfileClient;
     xtkSpecfileClient.addHttpHeader('X-Security-Token', exports.securityToken);
     xtkSpecfileClient.addHttpHeader('cookie',  "__sessiontoken=" + exports.sessionToken);
@@ -116,7 +117,7 @@ exports.generateDoc = function(specFileDefinition, onSuccessHandler){
       sessiontoken: '',
       entity: {$xml: specFileDefinition},
     };
-    console.log('SOAP GenerateDoc...');
+    logger.debug('SOAP GenerateDoc...');
     xtkSpecfileClient.GenerateDoc(args, function(err, result, rawResponse, soapHeader, rawRequest){
       if(process.env.SAVE_ARCHIVES == '1'){
         // save request to archives
@@ -133,14 +134,14 @@ exports.generateDoc = function(specFileDefinition, onSuccessHandler){
       if(err){
         var o = err.Fault;
         for(var key in o){
-          console.log('- '+key+': '+o[key]);
+          logger.debug('- '+key+': '+o[key]);
 
         }
         if(err.Fault.faultstring != 'Invalid XML'){
           throw err;
         }
       }
-      console.log('SOAP GenerateDoc OK');
+      logger.debug('SOAP GenerateDoc OK');
 
       onSuccessHandler(result, rawResponse, soapHeader, rawRequest);
     });
